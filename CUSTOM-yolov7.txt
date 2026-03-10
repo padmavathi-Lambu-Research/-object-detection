@@ -1,0 +1,290 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "gpuType": "T4",
+      "machine_shape": "hm"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "import yaml\n",
+        "from roboflow import Roboflow\n"
+      ],
+      "metadata": {
+        "id": "uOaexVFNLqXU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "J7G1kLpJ7f7Y"
+      },
+      "outputs": [],
+      "source": [
+        "# Download YOLOv7 repository and install requirements\n",
+        "!git clone https://github.com/WongKinYiu/yolov7\n",
+        "%cd yolov7\n",
+        "!pip install -r requirements.txt"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Download Correctly Formatted Custom Data\n",
+        "\n",
+        "!pip install roboflow\n",
+        "\n",
+        "from roboflow import Roboflow\n",
+        "rf = Roboflow(api_key=\"QzXSzNNUzWA\")\n",
+        "project = rf.workspace(\"padmavathi-yum5p\").project(\"flood-s3wgo\")\n",
+        "version = project.version(5)\n",
+        "dataset = version.download(\"yolov7\")\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "hVhXR5Q0-uiG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# download COCO starting checkpoint\n",
+        "%cd /content/yolov7\n",
+        "!wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7_training.pt"
+      ],
+      "metadata": {
+        "id": "bUbmy674bhpD"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%cd /content/yolov7"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "37-D1azLJUST",
+        "outputId": "08f21a27-fc6d-4427-c80f-5a151931e70a"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "/content/yolov7\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_yaml = f\"{dataset.location}/data.yaml\"\n",
+        "print(data_yaml)\n"
+      ],
+      "metadata": {
+        "id": "pg6WfarQJWUM"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install tensorboard\n"
+      ],
+      "metadata": {
+        "id": "D2ioryq_KTHE"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!python train.py --batch 16 --epochs 10 --data {data_yaml} --weights 'yolov7_training.pt' --device 0\n"
+      ],
+      "metadata": {
+        "id": "YMcXJ6dAKBKa"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%load_ext tensorboard\n",
+        "%tensorboard --logdir runs\n"
+      ],
+      "metadata": {
+        "id": "3aXEgRliKqy9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!kill 7177"
+      ],
+      "metadata": {
+        "id": "kck2RPneMD30"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!python train.py --batch 16 --epochs 10 --data {data_yaml} --weights 'yolov7_training.pt' --device 0\n"
+      ],
+      "metadata": {
+        "id": "i4og6oiAI63s"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "1iqOPKjr22mL"
+      },
+      "outputs": [],
+      "source": [
+        "# run this cell to begin training\n",
+        "%cd /content/yolov7\n",
+        "!python train.py --batch 16 --epochs 55 --data {dataset.location}/data.yaml --weights 'yolov7_training.pt' --device 0\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Begin Custom Training\n",
+        "\n",
+        "# download COCO starting checkpoint\n",
+        "%cd /content/yolov7\n",
+        "!wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7_training.pt\n"
+      ],
+      "metadata": {
+        "id": "1SmI3pn4_aX2"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import torch\n",
+        "print(torch.cuda.is_available())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "z5f14kG4B9iP",
+        "outputId": "e5cc8dbe-45d4-4aca-a6ab-678c3970e764"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "True\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "os.environ[\"WANDB_MODE\"] = \"dryrun\"\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "oW5dTHLHUOUd"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# run this cell to begin training\n",
+        "%cd /content/yolov7\n",
+        "#!python train.py --batch 16 --epochs 10 --data {dataset.location}/data.yaml --weights 'yolov7_training.pt' --device 0\n",
+        "!python train.py --data data/train.yaml --cfg cfg/yolov7.yaml --weights yolov7.pt --name yolov7_custom --epochs 10 --batch-size 16\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "_VUQeS0M_mVh"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Evaluation\n",
+        "\n",
+        "# Run evaluation\n",
+        "#!python detect.py --weights runs/train/exp/weights/best.pt --conf 0.1 --source {dataset.location}/test/images\n",
+        "!python detect.py --weights runs/train/yolov7_custom1/weights/best.pt --imgsz 640 --conf-thres 0.5 --source test_images/\n"
+      ],
+      "metadata": {
+        "id": "cqWUMEqi_qbx"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#display inference on ALL test images\n",
+        "\n",
+        "import glob\n",
+        "from IPython.display import Image, display\n",
+        "\n",
+        "i = 0\n",
+        "limit = 10000 # max images to print\n",
+        "for imageName in glob.glob('/content/yolov7/runs/detect/exp/*.jpg'): #assuming JPG\n",
+        "    if i < limit:\n",
+        "      display(Image(filename=imageName))\n",
+        "      print(\"\\n\")\n",
+        "    i = i + 1"
+      ],
+      "metadata": {
+        "id": "T--MTGBx_vJ3"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
