@@ -1,0 +1,373 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "gpuType": "T4"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "from google.colab import userdata\n",
+        "\n",
+        "#os.environ[\"QpcXSzNNUzWA\"] = userdata.get(\"QzpcXSzNNUzWA#\")"
+      ],
+      "metadata": {
+        "id": "U6reaZf61zPB"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Check GPU availability\n",
+        "!nvidia-smi"
+      ],
+      "metadata": {
+        "id": "9SaBtIv2QfCK"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "HOME = os.getcwd()\n",
+        "print(HOME)"
+      ],
+      "metadata": {
+        "id": "i-3s6LXWQjNY"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Install dependencies\n",
+        "!pip install -q git+https://github.com/sunsmarterjie/yolov12.git roboflow supervision flash-attn"
+      ],
+      "metadata": {
+        "id": "SzP9BYHTQrrw"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Download example data\n",
+        "!wget https://media.roboflow.com/notebooks/examples/dog.jpeg"
+      ],
+      "metadata": {
+        "id": "Bp3u62N9Q1nq"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Run inference\n",
+        "import cv2\n",
+        "from ultralytics import YOLO\n",
+        "import supervision as sv\n",
+        "\n",
+        "\n",
+        "image_path = f\"{HOME}/dog.jpeg\"\n",
+        "image = cv2.imread(image_path)\n",
+        "\n",
+        "model = YOLO('yolov12l.pt')\n",
+        "\n",
+        "results = model(image, verbose=False)[0]\n",
+        "detections = sv.Detections.from_ultralytics(results)\n",
+        "\n",
+        "box_annotator = sv.BoxAnnotator()\n",
+        "label_annotator = sv.LabelAnnotator()\n",
+        "\n",
+        "annotated_image = image.copy()\n",
+        "annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections)\n",
+        "annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections)\n",
+        "\n",
+        "sv.plot_image(annotated_image)"
+      ],
+      "metadata": {
+        "id": "W5n4U2AXQ812"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Download dataset from Roboflow Universe\n",
+        "!pip install roboflow\n",
+        "\n",
+        "from roboflow import Roboflow\n",
+        "rf = Roboflow(api_key=\"QzpcXSzNNUzWA\")\n",
+        "project = rf.workspace(\"padmavathi-yum5p\").project(\"flood-s3wgo\")\n",
+        "version = project.version(9)\n",
+        "dataset = version.download(\"yolov12\")\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "ZL3dutoN4qWg"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Download dataset from Roboflow Universe\n",
+        "#from roboflow import download_dataset\n",
+        "\n",
+        "#dataset = download_dataset('https://app.roboflow.com/ds/\"6HOCIvi5cm?\"key=y0q9GWGSMW/dataset/2', 'yolov8')"
+      ],
+      "metadata": {
+        "id": "L_x_-jguQ8-6"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!ls {dataset.location}"
+      ],
+      "metadata": {
+        "id": "fdRQ3F4SQ9H-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#!sed -i '$d' {dataset.location}/data.yaml\n",
+        "!sed -i '$d' {dataset.location}/data.yaml\n",
+        "!sed -i '$d' {dataset.location}/data.yaml\n",
+        "!sed -i '$d' {dataset.location}/data.yaml\n",
+        "!echo -e \"test: ../test/images\\ntrain: ../train/images\\nval: ../valid/images\" >> {dataset.location}/data.yaml"
+      ],
+      "metadata": {
+        "id": "GELnWQV0Q9LN"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!cat {dataset.location}/data.yaml"
+      ],
+      "metadata": {
+        "id": "6OdSlU8SQ9Nv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Fine-tune YOLOv12 model\n",
+        "#from ultralytics import YOLO\n",
+        "\n",
+        "#model = YOLO('yolov12s.yaml')\n",
+        "\n",
+        "#results = model.predict(\"/content/FLOOD1.jpg\",save = True)"
+      ],
+      "metadata": {
+        "id": "W1g5-0auHbGS"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Fine-tune YOLOv12 model\n",
+        "from ultralytics import YOLO\n",
+        "\n",
+        "model = YOLO('yolov12s.yaml')\n",
+        "\n",
+        "results = model.train(data=f'{dataset.location}/data.yaml', epochs=500)"
+      ],
+      "metadata": {
+        "id": "3h-720fMQ9QX"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Evaluate fine-tuned YOLOv12 model\n",
+        "import locale\n",
+        "locale.getpreferredencoding = lambda: \"UTF-8\"\n",
+        "\n",
+        "!ls {HOME}/runs/detect/train2/"
+      ],
+      "metadata": {
+        "id": "88iRZvASQ9S6"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from IPython.display import Image\n",
+        "\n",
+        "Image(filename=f'{HOME}/runs/detect/train2/confusion_matrix.png', width=800)"
+      ],
+      "metadata": {
+        "id": "B17Fzgt1UoSZ"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from IPython.display import Image\n",
+        "\n",
+        "Image(filename=f'{HOME}/runs/detect/train2/results.png', width=800)"
+      ],
+      "metadata": {
+        "id": "7HJzE3ZqUoVt"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import supervision as sv\n",
+        "\n",
+        "ds = sv.DetectionDataset.from_yolo(\n",
+        "    images_directory_path=f\"{dataset.location}/test/images\",\n",
+        "    annotations_directory_path=f\"{dataset.location}/test/labels\",\n",
+        "    data_yaml_path=f\"{dataset.location}/data.yaml\"\n",
+        ")\n",
+        "\n",
+        "ds.classes"
+      ],
+      "metadata": {
+        "id": "SlOwP2ljUoZX"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from supervision.metrics import MeanAveragePrecision\n",
+        "\n",
+        "model = YOLO(f'/{HOME}/runs/detect/train2/weights/best.pt')\n",
+        "\n",
+        "predictions = []\n",
+        "targets = []\n",
+        "\n",
+        "for _, image, target in ds:\n",
+        "    results = model(image, verbose=False)[0]\n",
+        "    detections = sv.Detections.from_ultralytics(results)\n",
+        "\n",
+        "    predictions.append(detections)\n",
+        "    targets.append(target)\n",
+        "\n",
+        "map = MeanAveragePrecision().update(predictions, targets).compute()"
+      ],
+      "metadata": {
+        "id": "ZhcGO9d-Uoce"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"mAP 50:95\", map.map50_95)\n",
+        "print(\"mAP 50\", map.map50)\n",
+        "print(\"mAP 75\", map.map75)"
+      ],
+      "metadata": {
+        "id": "n5NIUEHsUoe2"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "map.plot()"
+      ],
+      "metadata": {
+        "id": "7pseFHC1U8hB"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Run inference with fine-tuned YOLOv12 model\n",
+        "import supervision as sv\n",
+        "\n",
+        "model = YOLO(f'/{HOME}/runs/detect/train2/weights/best.pt')\n",
+        "\n",
+        "ds = sv.DetectionDataset.from_yolo(\n",
+        "    images_directory_path=f\"{dataset.location}/test/images\",\n",
+        "    annotations_directory_path=f\"{dataset.location}/test/labels\",\n",
+        "    data_yaml_path=f\"{dataset.location}/data.yaml\"\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "MyOvWR77U8l2"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import random\n",
+        "\n",
+        "i = random.randint(0, len(ds))\n",
+        "\n",
+        "image_path, image, target = ds[i]\n",
+        "\n",
+        "results = model(image, verbose=False)[0]\n",
+        "detections = sv.Detections.from_ultralytics(results).with_nms()\n",
+        "\n",
+        "box_annotator = sv.BoxAnnotator()\n",
+        "label_annotator = sv.LabelAnnotator()\n",
+        "\n",
+        "annotated_image = image.copy()\n",
+        "annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections)\n",
+        "annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections)\n",
+        "\n",
+        "sv.plot_image(annotated_image)"
+      ],
+      "metadata": {
+        "id": "gSaUQsB4U8oW"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
