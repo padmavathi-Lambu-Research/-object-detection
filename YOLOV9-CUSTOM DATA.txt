@@ -1,0 +1,45 @@
+1.	!nvidia-smi
+
+2.	import os
+HOME = os.getcwd()
+print(HOME)
+
+3.	# Pip install method (recommended)
+
+!pip install ultralytics –q
+
+4.	from ultralytics import YOLO
+from IPython.display import display, Image
+
+5.	%cd {HOME}
+
+6.	#dataset form roboflow
+
+!pip install roboflow
+
+from roboflow import Roboflow
+rf = Roboflow(api_key="BRayIWyopOJ5C1zUePKK")
+project = rf.workspace("lulc").project("newver20")
+version = project.version(2)
+dataset = version.download("yolov9")
+
+7.	%cd {HOME}
+!yolo task=detect mode=train model=yolov9m.pt data=/content/newver20-2/data.yaml name=yolov9m_results epochs=5 imgsz=640 project="YOLOv9" name="yolov9-m"
+
+8.	!yolo task=detect mode=val model=/content/YOLOv9/yolov9-m4/weights/best.pt data=/content/newver20-2/data.yaml project = "YOLOv9"
+
+9.	!yolo task=detect mode=predict model=/content/YOLOv9/yolov9-m4/weights/best.pt conf=0.25 source=/content/newver20-2/test/images project = "YOLOv9"
+
+
+10.	import glob
+# from IPython.display import Image, display
+for image_path in glob.glob('/content/YOLOv9/predict*.jpg')[:10]:
+    display(Image(filename=image_path, width=450))
+    print("\n")
+
+11.	from google.colab import drive
+drive.mount('/content/drive')
+
+12.	%cd /content/drive/MyDrive/ECS_research/YOLOv9/
+!mkdir yolov9m_results
+!cp -r /content/YOLOv8 yolov9m_results
