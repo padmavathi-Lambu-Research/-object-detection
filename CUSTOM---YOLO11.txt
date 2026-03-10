@@ -1,0 +1,375 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "gpuType": "T4"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "PkW2SOzIPFpC"
+      },
+      "outputs": [],
+      "source": [
+        "#CHECK FOR GPU\n",
+        "!nvidia-smi"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#INSTALL ULTRALYTICS\n",
+        "!pip install ultralytics"
+      ],
+      "metadata": {
+        "id": "xOO4B1YDP3jR"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from ultralytics import YOLO\n",
+        "from IPython.display import Image"
+      ],
+      "metadata": {
+        "id": "WNyyF0Y8QG-h"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#DOWNLOAD DATASET FROM ROBOFLOW\n",
+        "\n",
+        "#!pip install roboflow\n",
+        "#from roboflow import Roboflow\n",
+        "##rf = Roboflow(api_key=\"XSzNNUzWA\")\n",
+        "#project = rf.workspace(\"padmavathi-yum5p\").project(\"flood-s3wgo\")\n",
+        "#version = project.version(7)\n",
+        "#dataset = version.download(\"yolov11\")\n",
+        "\n",
+        "!pip install roboflow\n",
+        "\n",
+        "from roboflow import Roboflow\n",
+        "rf = Roboflow(api_key=\"NUzWA\")\n",
+        "project = rf.workspace(\"padmavathi-yum5p\").project(\"new-hsrfy\")\n",
+        "version = project.version(1)\n",
+        "dataset = version.download(\"yolov11\")\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "_ocsCAxc8v3u"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "dataset.location"
+      ],
+      "metadata": {
+        "id": "ZVMxsU0LPJkm"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#TRAIN YOLO11 MODEL ON A CUSTOM DATA SET\n",
+        "!yolo task=detect mode=train data={dataset.location}/data.yaml model=\"yolo11n.pt\" epochs=50 imgsz=640"
+      ],
+      "metadata": {
+        "id": "Bl8lTWJbQew-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!ls /content/runs/detect/train/"
+      ],
+      "metadata": {
+        "id": "upkFITslN33l"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#EXAMINE THE YTRAINING RESULTS\n",
+        "Image(\"/content/runs/detect/train/confusion_matrix.png\",width=600)"
+      ],
+      "metadata": {
+        "id": "r15y5SQmVM5q"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Image(\"/content/runs/detect/train/labels.jpg\",width=600)"
+      ],
+      "metadata": {
+        "id": "7FRsi6BUVj1D"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Image(\"/content/runs/detect/train/results.png\",width=600)"
+      ],
+      "metadata": {
+        "id": "qfak0MrkVxD6"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Image(\"/content/runs/detect/train/train_batch0.jpg\",width=600)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 617
+        },
+        "id": "WoxaN6B6V6eZ",
+        "outputId": "1dd44b96-ea15-4c03-ec91-8e900e5db4fb"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+           ",
+            "text/plain": [
+              "<IPython.core.display.Image object>"
+            ]
+          },
+          "metadata": {
+            "image/jpeg": {
+              "width": 600
+            }
+          },
+          "execution_count": 11
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#from IPython.display import Image\n",
+        "#Image(\"/content/runs/detect/train6/confusion_matrix.png\",width=600)\n",
+        "#Image(\"/content/runs/detect/train6/labels.jpg\",width=600)\n",
+        "#Image(\"/content/runs/detect/train6/results.png\",width=600)\n",
+        "#Image(\"/content/runs/detect/train6/train_batch0.jpg\",width=600)\n",
+        "#Image(\"/content/runs/detect/train6/val_batch1.jpg\",width=600)"
+      ],
+      "metadata": {
+        "id": "ANCDmTY5NYxi"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Image(\"/content/runs/detect/trai5/val_batch1_pred.jpg\",width=600)\n",
+        "Image(\"/content/runs/detect/train/val_batch1.jpg\",width=600)"
+      ],
+      "metadata": {
+        "id": "50A2vrhcWG4C"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!yolo task=detect mode=val  model=\"/content/runs/detect/train/weights/best.pt\" data={dataset.location}/data.yaml"
+      ],
+      "metadata": {
+        "id": "I9hAJ9EZX0RS"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#INFERENCE WITH CUSTOM MODEL ON IMAGES\n",
+        "!yolo task=detect mode=predict model=\"/content/runs/detect/train/weights/best.pt\" source={dataset.location}/test/images save=True"
+      ],
+      "metadata": {
+        "id": "4VD58931WTcT"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import glob\n",
+        "import os\n",
+        "from IPython.display import Image as IPyImage, display\n",
+        "\n",
+        "latest_folder = max(glob.glob('/content/runs/detect/predict*/'), key=os.path.getmtime)\n",
+        "for img in glob.glob(f'{latest_folder}/*.jpg')[1:4]:\n",
+        "    display(IPyImage(filename=img, width=100))\n",
+        "    print(\"\\n\")"
+      ],
+      "metadata": {
+        "id": "NXU6SR1lC5AE",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 286
+        },
+        "outputId": "a89c73d1-be3d-4dd4-8494-4a996e79eb5b"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/jpeg": "",
+            "text/plain": [
+              "<IPython.core.display.Image object>"
+            ]
+          },
+          "metadata": {
+            "image/jpeg": {
+              "width": 100
+            }
+          }
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/jpeg": "
+            "text/plain": [
+              "<IPython.core.display.Image object>"
+            ]
+          },
+          "metadata": {
+            "image/jpeg": {
+              "width": 100
+            }
+          }
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install gdown\n",
+        "# to upgrade\n",
+        "!pip install --upgrade gdown"
+      ],
+      "metadata": {
+        "id": "IxMx9D_3DSEH"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#!pip install gdown\n",
+        "!gdown \"https://drive.google.com/uc?id=1f0v3FQk3AG0mwWsvXpSDe6FWsCA3ierj\""
+      ],
+      "metadata": {
+        "id": "Klxg4gbrDZh9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!yolo task=detect mode=predict model=\"/content/runs/detect/train/weights/best.pt\" conf=0.25 source={dataset.location}/test/images save=True"
+      ],
+      "metadata": {
+        "id": "mTdNHKl3Y9wz"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# The existing code in cell before the last one (now the last cell)\n",
+        "import glob\n",
+        "import os\n",
+        "from IPython.display import Image\n",
+        "\n",
+        "# Find the latest prediction folder\n",
+        "latest_prediction_folder = max(glob.glob('/content/runs/detect/predict*/'), key=os.path.getmtime)\n",
+        "\n",
+        "# Construct the path to the image within the latest folder\n",
+        "image_path = os.path.join(latest_prediction_folder, \"Flood1.jpg\")\n",
+        "\n",
+        "# Display the image using the dynamically generated path\n",
+        "Image(image_path, width=600)\n",
+        "\n",
+        "# Remove the last cell with the hardcoded path:\n",
+        "# Image(\"/content/runs/detect/predict2/FLOOD1.jpg\",width=600)"
+      ],
+      "metadata": {
+        "id": "as2Uze3sQHwo"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Image(\"/content/runs/detect/predict2/FLOOD1.jpg\",width=600)"
+      ],
+      "metadata": {
+        "id": "5cNhFCsRC0sk"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
